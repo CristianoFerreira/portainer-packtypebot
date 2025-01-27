@@ -168,10 +168,10 @@ services:
       - --entryPoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entrypoints.websecure.asDefault=true 
-      - --entrypoints.websecure.http.tls.certresolver=myresolver
-      - --certificatesresolvers.myresolver.acme.email=$email
-      - --certificatesresolvers.myresolver.acme.tlschallenge=true
-      - --certificatesresolvers.myresolver.acme.storage=/acme.json
+      - --entrypoints.websecure.http.tls.certresolver=leresolver
+      - --certificatesresolvers.leresolver.acme.email=$email
+      - --certificatesresolvers.leresolver.acme.tlschallenge=true
+      - --certificatesresolvers.leresolver.acme.storage=/acme.json
     ports:
       - 80:80
       - 443:443
