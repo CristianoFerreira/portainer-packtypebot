@@ -159,9 +159,9 @@ services:
     restart: always
     command:
       - --api.dashboard=true
-      - --log.level=INFO
+      - --log.level=ERROR
       - --accesslog=true
-      - --providers.docker.network=proxy
+      - --providers.docker.network=traefik
       - --providers.docker.exposedByDefault=false
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
@@ -175,6 +175,8 @@ services:
     ports:
       - 80:80
       - 443:443
+    expose:
+      - 8080       
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./acme.json:/acme.json"
@@ -185,10 +187,12 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.routers.traefik-dashboard.rule=Host(\`$traefik\`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.traefik-dashboard.service=api@internal"
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=leresolver"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+      #- "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.service=traefik-service"
       - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"      
+      - "traefik.http.services.traefik-service.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
   portainer:
     image: portainer/portainer-ce:latest
     command: -H unix:///var/run/docker.sock
